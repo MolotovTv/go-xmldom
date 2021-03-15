@@ -9,7 +9,7 @@ const (
 	ExampleXml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE junit SYSTEM "junit-result.dtd">
 <testsuites>
-	<testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
+	<testsuite tests="2" failures="0" time="0.009" name="github.com/goXML/go-xmldom">
 		<properties>
 			<property name="go.version">go1.8.1</property>
 		</properties>
@@ -93,7 +93,7 @@ func ExampleNode_GetAttribute() {
 	attr := node.FirstChild().GetAttribute("name")
 	fmt.Printf("%v = %v\n", attr.Name.Local, attr.Value)
 	// Output:
-	// name = github.com/subchen/go-xmldom
+	// name = github.com/goXML/go-xmldom
 }
 
 func ExampleNode_GetChildren() {
@@ -167,7 +167,7 @@ func ExampleDocument_XML() {
 	doc := Must(ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/goXML/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
@@ -177,7 +177,7 @@ func ExampleDocument_XMLPretty() {
 	// <?xml version="1.0" encoding="UTF-8"?>
 	// <!DOCTYPE junit SYSTEM "junit-result.dtd">
 	// <testsuites>
-	//   <testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
+	//   <testsuite tests="2" failures="0" time="0.009" name="github.com/goXML/go-xmldom">
 	//     <properties>
 	//       <property name="go.version">go1.8.1</property>
 	//     </properties>
@@ -190,7 +190,7 @@ func ExampleDocument_XMLPretty() {
 func ExampleNewDocument() {
 	doc := NewDocument("testsuites")
 
-	testsuiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
+	testsuiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/goXML/go-xmldom")
 	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1").Text = "PASS"
 	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 2").Text = "FAIL"
 
@@ -198,7 +198,7 @@ func ExampleNewDocument() {
 	// Output:
 	// <?xml version="1.0" encoding="UTF-8"?>
 	// <testsuites>
-	//   <testsuite name="github.com/subchen/go-xmldom">
+	//   <testsuite name="github.com/goXML/go-xmldom">
 	//     <testcase name="case 1">PASS</testcase>
 	//     <testcase name="case 2">FAIL</testcase>
 	//   </testsuite>
