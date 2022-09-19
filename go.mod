@@ -1,3 +1,5 @@
-module github.com/subchen/go-xmldom
+module github.com/molotovtv/go-xmldom
 
-require github.com/antchfx/xpath v1.0.0
+go 1.18
+
+require github.com/antchfx/xpath v1.2.1

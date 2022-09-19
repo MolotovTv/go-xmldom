@@ -4,10 +4,10 @@ package xmldom
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"os"
 	"strings"
-	"fmt"
 )
 
 func Must(doc *Document, err error) *Document {

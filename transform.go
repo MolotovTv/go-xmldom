@@ -12,9 +12,13 @@ func (n *Node) Transform(f TransformFunc) error {
 
 func (n *Node) ParseXML(data string) error {
 	doc := *n.Document
-	doc.ParseXML(data)
+	if err := doc.ParseXML(data); err != nil {
+		return err
+	}
+
 	doc.Root.ChangeDocumentTo(n.Document, n.Parent)
 	*n = *doc.Root
+
 	return nil
 }
 

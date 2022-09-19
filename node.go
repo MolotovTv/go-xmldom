@@ -164,7 +164,7 @@ func (n *Node) AppendChild(c *Node) *Node {
 func (n *Node) CreateNodeAt(index int, name string) *Node {
 
 	newNode := &Node{
-		Name:     name,
+		Name:     xml.Name{Local: name},
 		Parent:   n,
 		Document: n.Document}
 	n.Children = append(n.Children, &Node{})

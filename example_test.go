@@ -1,8 +1,11 @@
-package xmldom
+// nolint:govet
+package xmldom_test
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
+
+	"github.com/molotovtv/go-xmldom"
 )
 
 const (
@@ -45,7 +48,7 @@ const (
 )
 
 func ExampleParseXML() {
-	node := Must(ParseXML(ExampleXml)).Root
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	fmt.Printf("name = %v\n", node.Name.Local)
 	fmt.Printf("attributes.len = %v\n", len(node.Attributes))
 	fmt.Printf("children.len = %v\n", len(node.Children))
@@ -57,8 +60,8 @@ func ExampleParseXML() {
 	// root = true
 }
 
-func ExampleParseNamespacesXML() {
-	node := Must(ParseXML(ExampleNamespaceXml)).Root
+func ExampleParseNamespaceszXML() {
+	node := xmldom.Must(xmldom.ParseXML(ExampleNamespaceXml)).Root
 	fmt.Printf("name.Local = %v\n", node.Name.Local)
 	fmt.Printf("name.Space = %v\n", node.Name.Space)
 	fmt.Printf("attributes.len = %v\n", len(node.Attributes))
@@ -73,7 +76,7 @@ func ExampleParseNamespacesXML() {
 }
 
 func ExampleEmptyElementTag() {
-	doc := Must(ParseXML(ExampleNamespaceXml))
+	doc := xmldom.Must(xmldom.ParseXML(ExampleNamespaceXml))
 	doc.EmptyElementTag = true
 	fmt.Println(doc.Root.XML())
 	// Output:
@@ -81,7 +84,7 @@ func ExampleEmptyElementTag() {
 }
 
 func ExampleStartTagEndTag() {
-	doc := Must(ParseXML(ExampleNamespaceXml))
+	doc := xmldom.Must(xmldom.ParseXML(ExampleNamespaceXml))
 	doc.EmptyElementTag = false
 	fmt.Println(doc.Root.XML())
 	// Output:
@@ -89,7 +92,7 @@ func ExampleStartTagEndTag() {
 }
 
 func ExampleNode_GetAttribute() {
-	node := Must(ParseXML(ExampleXml)).Root
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	attr := node.FirstChild().GetAttribute("name")
 	fmt.Printf("%v = %v\n", attr.Name.Local, attr.Value)
 	// Output:
@@ -97,7 +100,7 @@ func ExampleNode_GetAttribute() {
 }
 
 func ExampleNode_GetChildren() {
-	node := Must(ParseXML(ExampleXml)).Root
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	children := node.FirstChild().GetChildren("testcase")
 	for _, c := range children {
 		fmt.Printf("%v: id = %v\n", c.Name.Local, c.GetAttributeValue("id"))
@@ -108,7 +111,7 @@ func ExampleNode_GetChildren() {
 }
 
 func ExampleNode_FindByID() {
-	root := Must(ParseXML(ExampleXml)).Root
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	node := root.FindByID("ExampleParseXML")
 	fmt.Println(node.XML())
 	// Output:
@@ -116,7 +119,7 @@ func ExampleNode_FindByID() {
 }
 
 func ExampleNode_FindOneByName() {
-	root := Must(ParseXML(ExampleXml)).Root
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	node := root.FindOneByName("property")
 	fmt.Println(node.XML())
 	// Output:
@@ -124,7 +127,7 @@ func ExampleNode_FindOneByName() {
 }
 
 func ExampleNode_FindByName() {
-	root := Must(ParseXML(ExampleXml)).Root
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	nodes := root.FindByName("testcase")
 	for _, node := range nodes {
 		fmt.Println(node.XML())
@@ -135,7 +138,7 @@ func ExampleNode_FindByName() {
 }
 
 func ExampleNode_Query() {
-	node := Must(ParseXML(ExampleXml)).Root
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	// xpath expr: https://github.com/antchfx/xpath
 
 	// find all children
@@ -153,7 +156,7 @@ func ExampleNode_Query() {
 }
 
 func ExampleNode_QueryOne() {
-	node := Must(ParseXML(ExampleXml)).Root
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	// xpath expr: https://github.com/antchfx/xpath
 
 	// find node matched attr name
@@ -164,14 +167,14 @@ func ExampleNode_QueryOne() {
 }
 
 func ExampleDocument_XML() {
-	doc := Must(ParseXML(ExampleXml))
+	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
 	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
-	doc := Must(ParseXML(ExampleXml))
+	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XMLPretty())
 	// Output:
 	// <?xml version="1.0" encoding="UTF-8"?>
@@ -188,7 +191,7 @@ func ExampleDocument_XMLPretty() {
 }
 
 func ExampleNewDocument() {
-	doc := NewDocument("testsuites")
+	doc := xmldom.NewDocument("testsuites")
 
 	testsuiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
 	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1").Text = "PASS"
@@ -206,7 +209,7 @@ func ExampleNewDocument() {
 }
 
 func ExampleInheritNamespace() {
-	doc := NewDocument("")
+	doc := xmldom.NewDocument("")
 	doc.EmptyElementTag = false
 	doc.TextSafeMode = false
 	err := doc.Parse(
