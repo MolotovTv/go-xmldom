@@ -61,9 +61,7 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 				buf.WriteByte('"')
 				xmlEscape(buf, []byte(attr.Value))
 				buf.WriteByte('"')
-			} else if attr.Name.Space == "xmlns" {
-				// выставляем xmlns для тех тегов где он был изначально прописан,
-				// игнорируем первый тег так как для него уже есть условие
+			} else {
 				if level > 0 && space != nil && attr.Name.Local == space.Name.Local {
 					buf.WriteByte(' ')
 					buf.WriteString(attr.Name.Space)

@@ -21,7 +21,7 @@ func (n *Node) Root() *Node {
 
 func (n *Node) GetNamespaces() (names Namespaces) {
 	for _, attr := range n.Attributes {
-		if attr.Name.Space == "xmlns" {
+		if len(attr.Name.Space) > 0 {
 			names = append(names, *attr)
 		}
 	}
