@@ -31,7 +31,16 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 		buf.WriteString(strings.Repeat(indent, level))
 	}
 
-	space := n.GetNamespace()
+	if n.IsTextNode() {
+		if n.Document.TextSafeMode {
+			xml.EscapeText(buf, []byte(n.Text)) // nolint:errcheck
+		} else {
+			buf.WriteString(n.Text)
+		}
+		return
+	}
+
+	space := n.GetNamespace(n.Name.Space)
 
 	buf.WriteByte('<')
 	if space != nil {
@@ -40,9 +49,7 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 	}
 	buf.WriteString(n.Name.Local)
 
-	// наследование xmlns от вышестоящего элемента если он есть
-	if level == 0 && n.Name.Space != "" && space != nil {
-		// для тех случаев когда нужно распечатать часть большого XML, например Signature/SignedInfo
+	if level == 0 && n.Parent != nil && space != nil {
 		buf.WriteByte(' ')
 		buf.WriteString(space.Name.Space)
 		buf.WriteByte(':')
@@ -52,60 +59,42 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 		xml.Escape(buf, []byte(space.Value))
 		buf.WriteByte('"')
 	}
-	if len(n.Attributes) > 0 {
-		for _, attr := range n.Attributes {
-			if attr.Name.Space == "" {
-				buf.WriteByte(' ')
-				buf.WriteString(attr.Name.Local)
-				buf.WriteByte('=')
-				buf.WriteByte('"')
-				xmlEscape(buf, []byte(attr.Value))
-				buf.WriteByte('"')
-			} else if attr.Name.Space == "xmlns" {
-				// выставляем xmlns для тех тегов где он был изначально прописан,
-				// игнорируем первый тег так как для него уже есть условие
-				if level > 0 && space != nil && attr.Name.Local == space.Name.Local {
-					buf.WriteByte(' ')
-					buf.WriteString(attr.Name.Space)
-					buf.WriteByte(':')
-					buf.WriteString(attr.Name.Local)
-					buf.WriteByte('=')
-					buf.WriteByte('"')
-					xmlEscape(buf, []byte(attr.Value))
-					buf.WriteByte('"')
-				}
-			}
+	for _, attr := range n.Attributes {
+		buf.WriteByte(' ')
+		if attr.Name.Space == xmlnsPrefix {
+			buf.WriteString(attr.Name.Space)
+			buf.WriteByte(':')
+		} else if space := n.GetNamespace(attr.Name.Space); space != nil {
+			buf.WriteString(space.Name.Local)
+			buf.WriteByte(':')
 		}
+		buf.WriteString(attr.Name.Local)
+		buf.WriteByte('=')
+		buf.WriteByte('"')
+		xmlEscape(buf, []byte(attr.Value))
+		buf.WriteByte('"')
 	}
 	if n.Document.EmptyElementTag {
-		if len(n.Children) == 0 && len(n.Text) == 0 {
+		if len(n.Children) == 0 {
 			buf.WriteString(" />")
-			if pretty {
-				buf.WriteByte('\n')
-			}
 			return
 		}
 	}
 
 	buf.WriteByte('>')
 
-	if len(n.Children) > 0 {
-		if pretty {
-			buf.WriteByte('\n')
-		}
-		for _, c := range n.Children {
+	for _, c := range n.Children {
+		if c.IsTextNode() {
+			p.printXML(buf, c, level+1, "")
+		} else {
+			if pretty {
+				buf.WriteByte('\n')
+			}
 			p.printXML(buf, c, level+1, indent)
 		}
 	}
-	if len(n.Text) > 0 {
-		if n.Document.TextSafeMode {
-			xml.EscapeText(buf, []byte(n.Text)) // nolint:errcheck
-		} else {
-			buf.WriteString(n.Text)
-		}
-	}
-
-	if len(n.Children) > 0 && len(indent) > 0 {
+	if pretty && len(n.Children) > 0 && !(len(n.Children) == 1 && n.Children[0].IsTextNode()) {
+		buf.WriteByte('\n')
 		buf.WriteString(strings.Repeat(indent, level))
 	}
 	buf.WriteString("</")
@@ -115,10 +104,6 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 	}
 	buf.WriteString(n.Name.Local)
 	buf.WriteByte('>')
-
-	if pretty {
-		buf.WriteByte('\n')
-	}
 }
 
 func xmlEscape(w io.Writer, value []byte) {

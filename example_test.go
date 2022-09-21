@@ -45,6 +45,67 @@ const (
 		</ds:Signature>
 	</S:Body>
 </S:Envelope>`
+
+	ExampleTTML = `<?xml version="1.0" encoding="UTF-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ebuttm="urn:ebu::tt::metadata" xmlns:ebutts="urn:ebu::tt::style" xml:lang="fra" ttp:cellResolution="40 24" ttp:timeBase="media">
+  <head>
+	<metadata>
+	  <ttm:title />
+	  <ttm:desc />
+	  <ttm:copyright />
+	</metadata>
+	<styling>
+	  <style xml:id="Style_367" backgroundColor="#101010fe" tts:color="#ebeb0afe" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" />
+	  <style xml:id="Style_368" backgroundColor="#00000000" tts:color="#00000000" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" />
+	  <style xml:id="Style_369" backgroundColor="#101010fe" tts:color="#ebeb0afe" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" />
+	</styling>
+	<layout>
+	  <region xml:id="Region_367" tts:extent="82% 8%" tts:origin="9% 79%" />
+	  <region xml:id="Region_368" tts:extent="0% 0%" tts:origin="50% 0%" />
+	  <region xml:id="Region_369" tts:extent="82% 8%" tts:origin="9% 79%" />
+	</layout>
+  </head>
+  <body>
+	<div>
+	  <p begin="00:00:00.000" end="00:00:01.560" region="Region_367">
+		<span style="Style_367">
+		  dormant avec son chat,
+		  <br />
+		  Emma de Saint-Ismier dans l&apos;Isère
+		</span>
+	  </p>
+	  <p begin="00:00:01.560" end="00:00:01.920" region="Region_368">
+		<span style="Style_368" />
+	  </p>
+	  <p begin="00:00:01.920" end="00:00:03.840" region="Region_369">
+		<span style="Style_369">
+		  se détend en regardant
+		  <br />
+		  le top des comédies française.
+		</span>
+	  </p>
+	  <p begin="00:00:03.840" end="00:00:05.320" region="Region_369">
+		<span style="Style_369">
+		  se détend en regardant
+		  <br />
+		  le top des comédies française.
+		</span>
+	  </p>
+	  <p begin="00:00:05.320" end="00:00:05.600" region="Region_368">
+		<span style="Style_368" />
+	  </p>
+	  <p begin="00:00:05.600" end="00:00:05.760" region="Region_369">
+		<span style="Style_369">-On est en rose, les 2.</span>
+	  </p>
+	  <p begin="00:00:05.760" end="00:00:07.240" region="Region_368">
+		<span style="Style_368">-On est en rose, les 2.</span>
+	  </p>
+	  <p begin="00:00:07.240" end="00:00:07.520" region="Region_367">
+		<span style="Style_367" />
+	  </p>
+	</div>
+  </body>
+</tt>`
 )
 
 func ExampleParseXML() {
@@ -80,15 +141,7 @@ func ExampleEmptyElementTag() {
 	doc.EmptyElementTag = true
 	fmt.Println(doc.Root.XML())
 	// Output:
-	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns0:Content xmlns:ns0="namespace_0"><ns1:Item>item1</ns1:Item><ns1:Item>item2</ns1:Item></ns0:Content><ns2:Other xmlns:ns2="namespace_2" param="test_param_value" /></S:Body></S:Envelope>
-}
-
-func ExampleStartTagEndTag() {
-	doc := xmldom.Must(xmldom.ParseXML(ExampleNamespaceXml))
-	doc.EmptyElementTag = false
-	fmt.Println(doc.Root.XML())
-	// Output:
-	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns0:Content xmlns:ns0="namespace_0"><ns1:Item>item1</ns1:Item><ns1:Item>item2</ns1:Item></ns0:Content><ns2:Other xmlns:ns2="namespace_2" param="test_param_value"></ns2:Other></S:Body></S:Envelope>
+	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns0:Content xmlns:ns0="namespace_0" xmlns:ns1="namespace_1"><ns1:Item>item1</ns1:Item><ns1:Item>item2</ns1:Item></ns0:Content><ns2:Other xmlns:ns2="namespace_2" param="test_param_value" /></S:Body></S:Envelope>
 }
 
 func ExampleNode_GetAttribute() {
@@ -150,7 +203,7 @@ func ExampleNode_Query() {
 		fmt.Printf("%v: id = %v\n", c.Name.Local, c.GetAttributeValue("id"))
 	}
 	// Output:
-	// children = 5
+	// children = 6
 	// testcase: id = ExampleParseXML
 	// testcase: id = ExampleParse
 }
@@ -194,8 +247,8 @@ func ExampleNewDocument() {
 	doc := xmldom.NewDocument("testsuites")
 
 	testsuiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
-	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1").Text = "PASS"
-	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 2").Text = "FAIL"
+	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1").CreateTextNode("PASS")
+	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 2").CreateTextNode("FAIL")
 
 	fmt.Println(doc.XMLPretty())
 	// Output:
@@ -228,4 +281,14 @@ func ExampleInheritNamespace() {
 	// 				</ds:DigestValue></ds:SignedInfo></ds:Signature></S:Body></S:Envelope>
 	// <ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:DigestValue>KHDHFKSFH2IEFIDHJKSHFKJHSKDJFH==
 	// 				</ds:DigestValue></ds:SignedInfo>
+}
+
+func ExampleParseTTML() {
+	doc, err := xmldom.Parse(bytes.NewReader([]byte(ExampleTTML)))
+	fmt.Println(err)
+	fmt.Println(doc.XML())
+
+	// Output:
+	// <nil>
+	// <?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ebuttm="urn:ebu::tt::metadata" xmlns:ebutts="urn:ebu::tt::style" xml:lang="fra" ttp:cellResolution="40 24" ttp:timeBase="media"><head><metadata><ttm:title /><ttm:desc /><ttm:copyright /></metadata><styling><style xml:id="Style_367" backgroundColor="#101010fe" tts:color="#ebeb0afe" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" /><style xml:id="Style_368" backgroundColor="#00000000" tts:color="#00000000" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" /><style xml:id="Style_369" backgroundColor="#101010fe" tts:color="#ebeb0afe" tts:fontSize="80%" tts:lineHeight="100%" tts:textAlign="left" ebutts:linePadding="0c" ebutts:multiRowAlign="auto" /></styling><layout><region xml:id="Region_367" tts:extent="82% 8%" tts:origin="9% 79%" /><region xml:id="Region_368" tts:extent="0% 0%" tts:origin="50% 0%" /><region xml:id="Region_369" tts:extent="82% 8%" tts:origin="9% 79%" /></layout></head><body><div><p begin="00:00:00.000" end="00:00:01.560" region="Region_367"><span style="Style_367">dormant avec son chat,<br />Emma de Saint-Ismier dans l&#39;Isère</span></p><p begin="00:00:01.560" end="00:00:01.920" region="Region_368"><span style="Style_368" /></p><p begin="00:00:01.920" end="00:00:03.840" region="Region_369"><span style="Style_369">se détend en regardant<br />le top des comédies française.</span></p><p begin="00:00:03.840" end="00:00:05.320" region="Region_369"><span style="Style_369">se détend en regardant<br />le top des comédies française.</span></p><p begin="00:00:05.320" end="00:00:05.600" region="Region_368"><span style="Style_368" /></p><p begin="00:00:05.600" end="00:00:05.760" region="Region_369"><span style="Style_369">-On est en rose, les 2.</span></p><p begin="00:00:05.760" end="00:00:07.240" region="Region_368"><span style="Style_368">-On est en rose, les 2.</span></p><p begin="00:00:07.240" end="00:00:07.520" region="Region_367"><span style="Style_367" /></p></div></body></tt>
 }

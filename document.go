@@ -7,6 +7,9 @@ import (
 
 const (
 	DEFAULT_XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>`
+	xmlURL             = "http://www.w3.org/XML/1998/namespace"
+	xmlnsPrefix        = "xmlns"
+	xmlPrefix          = "xml"
 )
 
 func NewDocument(name string) *Document {
@@ -53,6 +56,7 @@ func (d *Document) XMLPretty() string {
 		buf.WriteByte('\n')
 	}
 	buf.WriteString(d.Root.XMLPretty())
+	buf.WriteByte('\n')
 	return buf.String()
 }
 
@@ -67,5 +71,6 @@ func (d *Document) XMLPrettyEx(indent string) string {
 		buf.WriteByte('\n')
 	}
 	buf.WriteString(d.Root.XMLPrettyEx(indent))
+	buf.WriteByte('\n')
 	return buf.String()
 }
