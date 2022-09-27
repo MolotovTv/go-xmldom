@@ -95,12 +95,20 @@ func (doc *Document) Parse(r io.Reader) error {
 		case xml.CharData:
 			// text node
 			if e != nil {
+				// a new node
+				el := new(Node)
+				el.Document = doc
+				el.Parent = e
+
 				if strings.TrimSpace(string(token)) != "" {
 					if doc.TextSafeMode {
-						e.Text = string(bytes.TrimSpace(token))
+						el.Text = string(bytes.TrimSpace(token))
 					} else {
-						e.Text = string(token)
+						el.Text = string(token)
 					}
+				}
+				if el.Text != "" {
+					e.Children = append(e.Children, el)
 				}
 			}
 		case xml.ProcInst:

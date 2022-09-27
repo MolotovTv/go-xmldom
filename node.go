@@ -19,20 +19,28 @@ func (n *Node) Root() *Node {
 	return n.Document.Root
 }
 
+func (n *Node) IsTextNode() bool {
+	return len(n.Text) > 0
+}
+
 func (n *Node) GetNamespaces() (names Namespaces) {
 	for _, attr := range n.Attributes {
-		if attr.Name.Space == "xmlns" {
+		if attr.Name.Space == xmlnsPrefix {
 			names = append(names, *attr)
 		}
 	}
 	return names
 }
 
-func (n *Node) GetNamespace() (attr *xml.Attr) {
+func (n *Node) GetNamespace(space string) (attr *xml.Attr) {
+	if space == xmlURL {
+		return &xml.Attr{Name: xml.Name{Local: xmlPrefix}}
+	}
+
 	node := n
 	for attr == nil && node != nil {
 		names := node.GetNamespaces()
-		attr = names.GetName(n.Name.Space)
+		attr = names.GetName(space)
 		if attr != nil {
 			return attr
 		}
@@ -155,6 +163,14 @@ func (n *Node) CreateNode(name string) *Node {
 	return newNode
 }
 
+func (n *Node) CreateTextNode(text string) *Node {
+	newNode := &Node{
+		Text: text,
+	}
+	n.AppendChild(newNode)
+	return newNode
+}
+
 func (n *Node) AppendChild(c *Node) *Node {
 	c.Document = n.Document
 	c.Parent = n
@@ -172,6 +188,7 @@ func (n *Node) CreateNodeAt(index int, name string) *Node {
 	n.Children[index] = newNode
 	return newNode
 }
+
 func (n *Node) IndexNode(c *Node) int {
 	for i, a := range n.Children {
 		if a == c {
