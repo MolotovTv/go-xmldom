@@ -135,6 +135,15 @@ func (n *Node) GetChild(name string) *Node {
 	return nil
 }
 
+func (n *Node) GetChildForNamespace(local, space string) *Node {
+	for _, c := range n.Children {
+		if c.Name.Local == local && c.Name.Space == space {
+			return c
+		}
+	}
+	return nil
+}
+
 func (n *Node) GetChildren(name string) []*Node {
 	var nodes []*Node
 	for _, c := range n.Children {
