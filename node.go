@@ -58,8 +58,25 @@ func (n *Node) GetAttribute(name string) *xml.Attr {
 	return nil
 }
 
+func (n *Node) GetAttributeForNamespace(local, space string) *xml.Attr {
+	for _, attr := range n.Attributes {
+		if attr.Name.Local == local && attr.Name.Space == space {
+			return attr
+		}
+	}
+	return nil
+}
+
 func (n *Node) GetAttributeValue(name string) string {
 	attr := n.GetAttribute(name)
+	if attr != nil {
+		return attr.Value
+	}
+	return ""
+}
+
+func (n *Node) GetAttributeValueForNamespace(local, space string) string {
+	attr := n.GetAttributeForNamespace(local, space)
 	if attr != nil {
 		return attr.Value
 	}
@@ -74,6 +91,23 @@ func (n *Node) SetAttributeValue(name string, value string) *Node {
 		attr := xml.Attr{
 			Name: xml.Name{
 				Local: name,
+			},
+			Value: value,
+		}
+		n.Attributes = append(n.Attributes, &attr)
+	}
+	return n
+}
+
+func (n *Node) SetAttributeValueWithNamespace(local, space, value string) *Node {
+	attr := n.GetAttributeForNamespace(local, space)
+	if attr != nil {
+		attr.Value = value
+	} else {
+		attr := xml.Attr{
+			Name: xml.Name{
+				Local: local,
+				Space: space,
 			},
 			Value: value,
 		}
